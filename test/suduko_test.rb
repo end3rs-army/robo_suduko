@@ -1,3 +1,5 @@
+require 'simplecov'
+SimpleCov.start
 require 'minitest'
 require 'minitest/pride'
 require 'minitest/autorun'
@@ -5,6 +7,7 @@ require_relative '../lib/cracker'
 require_relative '../lib/board'
 require_relative '../lib/sudoku_solver'
 require_relative '../lib/cracker'
+require_relative '../lib/runner'
 
 class SudukoTest < Minitest::Test
 
@@ -76,6 +79,11 @@ class SudukoTest < Minitest::Test
   def test_it_can_find_a_solution
     filename = "../puzzles/puzzle_solved.txt"
     crack = Cracker.new(filename)
+  end
+
+  def test_runner_finds_a_solution
+    run = Runner.new("../puzzles/puzzle_1.txt")
+    assert run.crack
   end
 
 end

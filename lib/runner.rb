@@ -30,6 +30,7 @@ class Runner
     formatter(solution)
     puts "\n--#{counter} iterations to crack the puzzle"
     puts "\n--#{time} seconds to crack the puzzle"
+    true
   end
 
   def formatter(solution)
