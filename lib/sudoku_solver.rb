@@ -48,11 +48,6 @@ class SudokuSolver
     square
   end
 
-  def guess_a_number(index)
-    numbers = (row_data(index) + column_data(index) + square_data(index)).uniq
-    random_digit_spitter(numbers)
-  end
-
   def random_digit_spitter(used_values)
     guess = (0..9).reject { |check_num| used_values.any? { |value| value == check_num } }
     if guess == []
@@ -60,6 +55,11 @@ class SudokuSolver
     else
       guess.sample
     end
+  end
+
+  def guess_a_number(index)
+    numbers = (row_data(index) + column_data(index) + square_data(index)).uniq
+    random_digit_spitter(numbers)
   end
 
   def solve_puzzle

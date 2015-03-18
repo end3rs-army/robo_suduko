@@ -3,6 +3,8 @@ require 'minitest/pride'
 require 'minitest/autorun'
 require_relative '../lib/cracker'
 require_relative '../lib/board'
+require_relative '../lib/sudoku_solver'
+require_relative '../lib/cracker'
 
 class SudukoTest < Minitest::Test
 
@@ -34,4 +36,46 @@ class SudukoTest < Minitest::Test
     assert_equal 4, board.what_row_am_i_in(40)
   end
   
+  def test_it_can_find_row_data
+    puzzle = Puzzle.new("../puzzles/puzzle_0.txt").original_puzzle
+    suduko = SudokuSolver.new(puzzle)
+    assert_equal [8,2,6,5,9,4,3,1,7], suduko.row_data(1)
+  end
+
+  def test_it_can_find_column_data
+    puzzle = Puzzle.new("../puzzles/puzzle_0.txt").original_puzzle
+    suduko = SudokuSolver.new(puzzle)
+    assert_equal [2,1,9,6,4,5,3,8,7], suduko.column_data(1)
+  end
+
+  def test_it_can_find_square_data
+    puzzle = Puzzle.new("../puzzles/puzzle_0.txt").original_puzzle
+    suduko = SudokuSolver.new(puzzle)
+    assert_equal [8,2,6,7,1,5,3,9,4], suduko.square_data(1)
+  end
+
+  def test_it_gives_a_random_number_of_available_digits
+    puzzle = Puzzle.new("../puzzles/puzzle_0.txt").original_puzzle
+    suduko = SudokuSolver.new(puzzle)
+    assert_equal 5, suduko.random_digit_spitter([0,1,2,3,4,6,7,8,9])
+  end
+
+  def test_it_can_guess_a_number
+    puzzle = Puzzle.new("../puzzles/puzzle_test2.txt").original_puzzle
+    suduko = SudokuSolver.new(puzzle)
+    assert_equal 7, suduko.guess_a_number(0)
+  end
+
+  def test_it_returns_true_for_a_good_solution
+    solution = Puzzle.new("../puzzles/puzzle_solved.txt").original_puzzle
+    filename = "../puzzles/puzzle_solved.txt"
+    crack = Cracker.new(filename)
+    assert crack.correct_solution?(solution)
+  end
+
+  def test_it_can_find_a_solution
+    filename = "../puzzles/puzzle_solved.txt"
+    crack = Cracker.new(filename)
+  end
+
 end
