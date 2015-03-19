@@ -7,10 +7,7 @@ class Puzzle
   end
 
   def read_puzzle(filename)
-    sudoku_puzzle = []
-    File.open("./puzzles/#{filename}").readlines.each do |line|
-      sudoku_puzzle << line
-    end 
+    File.open("./puzzles/#{filename}").readlines.map { |row| row }
   end
 
   def split_puzzle(sudoku_puzzle)

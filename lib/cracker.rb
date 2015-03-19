@@ -16,7 +16,7 @@ class Cracker
   end
 
   def correct_solution?(solution)
-    @good_solution = solution.none? { |value| value.to_i == 0 }
+    @good_solution = solution.none? { |cell| cell.value.to_i == 0 }
   end
 
 end

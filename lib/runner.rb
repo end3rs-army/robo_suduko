@@ -34,8 +34,8 @@ class Runner
   end
 
   def formatter(solution)
-    solution.each.with_index do |value, index|
-      print "#{value}"
+    solution.each.with_index do |cell, index|
+      print "#{cell.value}"
       print "\n" if (index+1)%9 == 0
     end
   end

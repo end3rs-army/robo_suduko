@@ -1,5 +1,7 @@
+require_relative './cell'
 require_relative './board'
 require_relative './puzzle'
+require_relative './advanced_logic'
 
 class SudokuSolver
 
@@ -9,40 +11,28 @@ class SudokuSolver
                 :board
 
   def initialize(puzzle)
-    @guess_puzzle = puzzle
-    @board = Board.new
+    @guess_puzzle = puzzle.map.with_index do |value, index|
+      Cell.new(value, index)
+    end
   end
 
-  def row_data(index)
-    row_number = board.what_row_am_i_in(index)
-    row = find_row(row_number)
-  end
-
-  def column_data(index)
-    column_number = board.what_column_am_i_in(index)
-    column = find_column(column_number)
-  end
-
-  def square_data(index)
-    square_number = board.what_square_am_i_in(index)
-    square = find_square(square_number)
-  end
-
-  def find_row(row_number)
+  def row_data(row_number)
     start = row_number * 9
-    (start..start+8).map { |index| guess_puzzle[index].to_i }
+    (start..start+8).map { |index| guess_puzzle[index].value.to_i }
   end
 
-  def find_column(column_number)
-    (0..8).map { |index| guess_puzzle[column_number + index*9].to_i }    
+  def column_data(column_number)
+    (0..8).map do |index| 
+      guess_puzzle[column_number + index*9].value.to_i
+    end
   end
 
-  def find_square(square_index)
-    square_start = @board.square_reference[square_index].to_i
+  def square_data(square_reference)
+    square_start = Board.square_reference[square_reference].to_i
     square = []
     (0..2).map do |line|
       (0..2).map do |index|
-        square << guess_puzzle[square_start + (index+line*9)].to_i
+        square << guess_puzzle[square_start + (index+line*9)].value.to_i
       end
     end
     square
@@ -57,15 +47,17 @@ class SudokuSolver
     end
   end
 
-  def guess_a_number(index)
-    numbers = (row_data(index) + column_data(index) + square_data(index)).uniq
+  def guess_a_number(cell)
+    numbers = (row_data(cell.row) + 
+               column_data(cell.column) + 
+               square_data(cell.square)).uniq
     random_digit_spitter(numbers)
   end
 
   def solve_puzzle
-    guess_puzzle.each_with_index do |value, index|
-      if value.to_i == 0
-        guess_puzzle[index] = guess_a_number(index)
+    guess_puzzle.each do |cell|
+      if cell.value.to_i == 0
+        cell.value = guess_a_number(cell)
       end
     end
   end
