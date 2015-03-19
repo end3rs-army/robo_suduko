@@ -2,7 +2,8 @@ require_relative './board'
 
 class Cell
 
-  attr_accessor :value
+  attr_accessor :value,
+                :possibles
     attr_reader :immutable,
                 :index,
                 :column,
@@ -17,6 +18,7 @@ class Cell
     @column    = Board.what_column_am_i_in(index)
     @square    = Board.what_square_am_i_in(index)
     @row       = Board.what_row_am_i_in(index)
+    @possibles = [value.to_i]
   end
 
 end

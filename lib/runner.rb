@@ -35,7 +35,7 @@ class Runner
 
   def formatter(solution)
     solution.each.with_index do |cell, index|
-      print "#{cell.value}"
+      print "#{cell.value} "
       print "\n" if (index+1)%9 == 0
     end
   end
@@ -44,7 +44,7 @@ end
 
 if __FILE__ == $0
 
-  run = Runner.new("../puzzles/puzzle_1.txt")
+  run = Runner.new("../puzzles/puzzle_4.txt")
   run.crack
 
 end

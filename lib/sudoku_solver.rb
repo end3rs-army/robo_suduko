@@ -38,28 +38,63 @@ class SudokuSolver
     square
   end
 
-  def random_digit_spitter(used_values)
-    guess = (0..9).reject { |check_num| used_values.any? { |value| value == check_num } }
-    if guess == []
-      0
-    else
-      guess.sample
-    end
-  end
-
-  def guess_a_number(cell)
-    numbers = (row_data(cell.row) + 
-               column_data(cell.column) + 
-               square_data(cell.square)).uniq
-    random_digit_spitter(numbers)
-  end
-
-  def solve_puzzle
-    guess_puzzle.each do |cell|
-      if cell.value.to_i == 0
-        cell.value = guess_a_number(cell)
+  def available_numbers(used_values)
+    possible_numbers = (0..9).reject do |check_num| 
+      used_values.any? do |value| 
+        value == check_num
       end
     end
   end
+
+  def find_available_numbers(cell)
+    used_numbers = (row_data(cell.row) + 
+                    column_data(cell.column) + 
+                    square_data(cell.square)).uniq
+    cell.possibles = available_numbers(used_numbers)
+  end
+
+  def solve_puzzle
+    while true  
+      guess_puzzle.each do |cell|
+        if cell.value == 0
+          find_available_numbers(cell)
+        end
+      end
+      
+      guess_puzzle.each do |cell|
+        if cell.possibles.size == 1 
+          cell.value = cell.possibles[0]
+        elsif cell.possibles.size == 0
+          cell.value = 0
+        end
+      end
+      
+      final_order = guess_puzzle.select do |cell|
+        cell.possibles.size > 1 && cell.value == 0
+      end
+
+      break if final_order == []
+      
+      cell_to_assign = final_order.sort_by {|cell| cell.possibles.size}.first
+      if cell_to_assign.possibles == []
+        cell_to_assign.value = 0
+      else  
+        cell_to_assign.value = cell_to_assign.possibles.sample
+      end
+    
+    end
+
+  end
+
+end
+
+
+if __FILE__ == $0
+
+ puzzle = Puzzle.new("../puzzles/puzzle_8.txt").original_puzzle
+ suduko = SudokuSolver.new(puzzle)
+ suduko.solve_puzzle
+
+
 
 end
