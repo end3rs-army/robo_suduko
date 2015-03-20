@@ -66,4 +66,26 @@ class Board
     end
   end
 
+  def self.row_data(row_number, puzzle)
+    start = row_number * 9
+    (start..start+8).map { |index| puzzle[index].value.to_i }
+  end
+
+  def self.column_data(column_number, puzzle)
+    (0..8).map do |index| 
+      puzzle[column_number + (index * 9)].value.to_i
+    end
+  end
+
+  def self.square_data(square_number, puzzle)
+    square_start = square_reference[square_number].to_i
+    square = []
+    (0..2).map do |line|
+      (0..2).map do |index|
+        square << puzzle[square_start + (index+line*9)].value.to_i
+      end
+    end
+    square
+  end
+
 end

@@ -14,17 +14,36 @@ class Cracker
   def find_solution
     solver = SudokuSolver.new(puzzle)
     solver.solve_puzzle
-    solution = solver.guess_puzzle
+    crack = solver.guess_puzzle
   end
 
-  def correct_solution?(solution)
-    checker = SudokuSolver.new(puzzle)
-    checker.guess_puzzle = solution
-    @good_solution = checker.guess_puzzle.all? do |cell| 
-      checker.row_data(cell.row).uniq.size == 9 && checker.row_data(cell.row).include?(0) == false
-      checker.column_data(cell.column).uniq.size == 9 && checker.column_data(cell.column).include?(0) == false
-      checker.square_data(cell.square).uniq.size == 9 && checker.square_data(cell.square).include?(0) == false
-    end 
+  def correct_solution?(crack)
+    if rows?(crack) == true && columns?(crack) == true && squares?(crack) == true
+      return true
+    else
+      return false
+    end   
+  end
+
+  def rows?(crack)
+    (0..8).all? do |number| 
+      row = Board.row_data(number, crack)
+      row.uniq.size == 9 && row.include?(0) == false
+    end
+  end
+
+  def columns?(crack)
+    (0..8).all? do |number| 
+      column = Board.column_data(number, crack)
+      column.uniq.size == 9 && column.include?(0) == false
+    end
+  end
+
+  def squares?(crack)
+    (0..8).all? do |number| 
+      square = Board.square_data(number, crack)
+      square.uniq.size == 9 && square.include?(0) == false
+    end
   end
 
 end

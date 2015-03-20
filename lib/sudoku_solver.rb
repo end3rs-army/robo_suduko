@@ -16,28 +16,6 @@ class SudokuSolver
     end
   end
 
-  def row_data(row_number)
-    start = row_number * 9
-    (start..start+8).map { |index| guess_puzzle[index].value.to_i }
-  end
-
-  def column_data(column_number)
-    (0..8).map do |index| 
-      guess_puzzle[column_number + index*9].value.to_i
-    end
-  end
-
-  def square_data(square_reference)
-    square_start = Board.square_reference[square_reference].to_i
-    square = []
-    (0..2).map do |line|
-      (0..2).map do |index|
-        square << guess_puzzle[square_start + (index+line*9)].value.to_i
-      end
-    end
-    square
-  end
-
   def available_numbers(used_values)
     possible_numbers = (0..9).reject do |check_num| 
       used_values.any? do |value| 
@@ -46,42 +24,59 @@ class SudokuSolver
     end
   end
 
-  def find_available_numbers(cell)
-    used_numbers = (row_data(cell.row) + 
-                    column_data(cell.column) + 
-                    square_data(cell.square)).uniq
-    cell.possibles = available_numbers(used_numbers)
+  def find_available_numbers
+    guess_puzzle.each do |cell|
+      if cell.value == 0
+        used_numbers = board_data(cell)
+        cell.possibles = available_numbers(used_numbers)
+      end
+    end 
+  end
+
+  def assign_possible_values
+    guess_puzzle.each do |cell|
+      if cell.possibles.size == 1 
+        cell.value = cell.possibles[0]
+      elsif cell.possibles.size == 0
+        cell.value = 0
+      end
+    end
+  end
+
+  def next_guess
+    guess_puzzle.select do |cell|
+      cell.possibles.size > 1 && cell.value == 0
+    end
+  end
+
+  def get_cell(cells_to_guess)
+    cells_to_guess.sort_by do |cell| 
+      cell.possibles.size
+    end.first
+  end
+
+  def assign_guess_value(cell_to_assign)
+    if cell_to_assign.possibles == []
+      cell_to_assign.value = 0
+    else  
+      cell_to_assign.value = cell_to_assign.possibles.sample
+    end
+  end
+
+  def board_data(cell)
+    (Board.row_data(cell.row,       guess_puzzle) + 
+     Board.column_data(cell.column, guess_puzzle) + 
+     Board.square_data(cell.square, guess_puzzle)).uniq
   end
 
   def solve_puzzle
     while true  
-      guess_puzzle.each do |cell|
-        if cell.value == 0
-          find_available_numbers(cell)
-        end
-      end
-      
-      guess_puzzle.each do |cell|
-        if cell.possibles.size == 1 
-          cell.value = cell.possibles[0]
-        elsif cell.possibles.size == 0
-          cell.value = 0
-        end
-      end
-      
-      final_order = guess_puzzle.select do |cell|
-        cell.possibles.size > 1 && cell.value == 0
-      end
-
-      break if final_order == []
-      
-      cell_to_assign = final_order.sort_by {|cell| cell.possibles.size}.first
-      if cell_to_assign.possibles == []
-        cell_to_assign.value = 0
-      else  
-        cell_to_assign.value = cell_to_assign.possibles.sample
-      end
-    
+      find_available_numbers
+      assign_possible_values
+      cells_to_guess = next_guess
+      break if cells_to_guess == []
+      cell_to_assign = get_cell(cells_to_guess)
+      assign_guess_value(cell_to_assign)
     end
 
   end

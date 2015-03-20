@@ -14,4 +14,14 @@ class Puzzle
     @original_puzzle = sudoku_puzzle.join('').delete("\n").split('')
   end
 
+  def print_puzzle
+    system 'clear'
+    print "\n\t\t== SUDOKU PUZZLE ==\n\n"
+    print "\t\t"
+    original_puzzle.each.with_index do |number, index|
+      print "#{number} "
+      print "\n\t\t" if (index+1)%9 == 0
+    end
+  end
+
 end

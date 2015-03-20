@@ -1,4 +1,6 @@
+require 'timeout'
 require_relative './cracker'
+require_relative './puzzle'
 
 class Runner
 
@@ -26,17 +28,18 @@ class Runner
 
   def report(solution)
     time = Time.now - start_time
-    print "Solution is:\n" 
+    print "\t\t==== SOLUTION ====\n\n" 
     formatter(solution)
-    puts "\n--#{counter} iterations to crack the puzzle"
-    puts "\n--#{time} seconds to crack the puzzle"
+    puts "\n\t--#{counter} iterations to crack the puzzle"
+    puts "\n\t--#{time.to_i} seconds to crack the puzzle"
     true
   end
 
   def formatter(solution)
+    print "\t\t"
     solution.each.with_index do |cell, index|
       print "#{cell.value} "
-      print "\n" if (index+1)%9 == 0
+      print "\n\t\t" if (index+1)%9 == 0
     end
   end
 
@@ -44,8 +47,32 @@ end
 
 if __FILE__ == $0
 
-  run = Runner.new("../puzzles/puzzle_4.txt")
-  run.crack
+   run = Runner.new("../sudoku-sample-puzzles/puzzle_0.txt")
+   puzzle = Puzzle.new("../sudoku-sample-puzzles/puzzle_0.txt")  
+   puzzle.print_puzzle
+   puts "\n"
+   yo = gets.chomp
+   run.crack
+   to = gets.chomp
+
+  Dir.glob("./sudoku-sample-puzzles/*.txt").each do |file|
+    
+    begin 
+      Timeout::timeout(15) {
+
+        run = Runner.new(".#{file}")
+        puzzle = Puzzle.new(".#{file}")  
+        puzzle.print_puzzle
+        puts "\n"
+        run.crack
+
+      }
+
+    rescue Timeout::Error
+    puts "\tDidn't crack #{file} \n"
+    end
+    sleep(3)
+  end
 
 end
 
